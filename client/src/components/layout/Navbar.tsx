@@ -1,13 +1,13 @@
 const Navbar = () => {
   return (
-    <nav className="p-2 w-full flex justify-between">
+    <nav className="p-2 w-full flex justify-between px-4">
       <div className="mt-4 flex gap-4 items-center rounded-xl shadow shadow-black p-3">
         <input
           className="outline-none"
           placeholder="search emails"
           type="text"
         />
-        <svg fill="none" viewBox="0 0 24 24" height="1em" width="1em">
+        <svg fill="none" viewBox="0 0 24 24" height="1.3em" width="1.3em">
           <path
             fill="currentColor"
             fillRule="evenodd"
