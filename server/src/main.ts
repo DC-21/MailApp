@@ -3,30 +3,38 @@ import bodyParser from 'body-parser';
 import nodemailer from 'nodemailer';
 import imaps, { ImapSimpleOptions } from 'imap-simple';
 import dotenv from 'dotenv';
+import compression from 'compression';
+import cors from 'cors'
+import morgan from 'morgan';
+import { simpleParser } from 'mailparser';
 
 dotenv.config();
 
 const app = express();
 const port = 3000;
 
+app.use(morgan("dev"))
+app.use(cors())
+app.use(compression())
 app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: `${process.env.EMAIL_USER}`,
-        pass: `${process.env.EMAIL_PASS}`,
+        user: `codedr21@gmail.com`,
+        pass: `iptd osna ynpl yjdo`,
     }
 });
 
 const imapConfig: ImapSimpleOptions = {
     imap: {
-        user: `${process.env.EMAIL_USER}`,
-        password: `${process.env.EMAIL_PASS}`,
+        user: `codedr21@gmail.com`,
+        password: `iptd osna ynpl yjdo`,
         host: 'imap.gmail.com',
         port: 993,
         tls: true,
-        authTimeout: 3000
+        authTimeout: 3000,
+        tlsOptions: { rejectUnauthorized: false }
     }
 };
 
@@ -60,20 +68,25 @@ app.get('/fetch-emails', async (req: Request, res: Response) => {
         };
 
         const messages = await connection.search(searchCriteria, fetchOptions);
-        const emails = messages.map(message => {
+        const emails = await Promise.all(messages.map(async message => {
             const headerPart = message.parts.find(part => part.which === 'HEADER');
-            if (headerPart && headerPart.body) {
+            const bodyPart = message.parts.find(part => part.which === 'TEXT');
+            if (headerPart && headerPart.body && bodyPart) {
                 const header = headerPart.body;
+                const parsed = await simpleParser(bodyPart.body);
                 const subject = header.subject[0];
                 const from = header.from[0];
-                return { subject, from };
+                const text = parsed.text;
+                return { subject, from, text };
             }
             return null;
-        }).filter(email => email !== null);
+        }));
+
+        const filteredEmails = emails.filter((email): email is { subject: string; from: string; text: string | undefined } => email !== null);
 
         await connection.end();
-        res.json(emails);
-    } catch (error:any) {
+        res.json(filteredEmails);
+    } catch (error: any) {
         res.status(500).send('Error fetching emails: ' + error.toString());
     }
 });
