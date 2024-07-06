@@ -7,7 +7,13 @@ const Navbar = () => {
           placeholder="search emails"
           type="text"
         />
-        <svg fill="none" viewBox="0 0 24 24" height="1.3em" width="1.3em">
+        <svg
+          className="text-gray-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          height="1.3em"
+          width="1.3em"
+        >
           <path
             fill="currentColor"
             fillRule="evenodd"
