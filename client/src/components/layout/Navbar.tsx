@@ -1,7 +1,7 @@
 const Navbar = () => {
   return (
     <nav className="p-2 w-full flex justify-between px-4">
-      <div className="mt-4 flex gap-4 items-center rounded-xl shadow shadow-black p-3">
+      <div className="mt-4 flex gap-4 items-center rounded-xl shadow-gray-300 border border-gray-200 bg-white shadow-lg p-3">
         <input
           className="outline-none"
           placeholder="search emails"

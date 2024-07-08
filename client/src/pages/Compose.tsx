@@ -17,7 +17,7 @@ const Compose = () => {
     <div className="py-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg max-w-lg w-full"
+        className=" p-4 border rounded-lg shadow-gray-400 border-gray-200 bg-white shadow-lg max-w-lg w-full"
       >
         <div className="mb-4">
           <label
