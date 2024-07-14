@@ -1,29 +1,10 @@
 import { useState } from "react";
 import { Email } from "../typs/interfaces";
 import Modal from "./View";
+import { useFetchEmails } from "../hooks/useFetchEmail";
 
 const Mail = () => {
-  const [emails] = useState<Email[]>([
-    {
-      id: 1,
-      sender: "alice@example.com",
-      subject: "Hello Alice",
-      content: "Content of Hello Alice",
-    },
-    {
-      id: 2,
-      sender: "bob@example.com",
-      subject: "Meeting Reminder",
-      content: "Content of Meeting Reminder",
-    },
-    {
-      id: 3,
-      sender: "carol@example.com",
-      subject: "Invoice #1234",
-      content: "Content of Invoice #1234",
-    },
-  ]);
-
+  const { data: emails, isLoading, error } = useFetchEmails();
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
 
   const handleEmailClick = (email: Email) => {
@@ -33,6 +14,14 @@ const Mail = () => {
   const handleCloseModal = () => {
     setSelectedEmail(null);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error instanceof Error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div className="py-4">
@@ -49,7 +38,7 @@ const Mail = () => {
           </tr>
         </thead>
         <tbody>
-          {emails.map((email, index) => (
+          {emails?.map((email: Email, index: any) => (
             <tr
               key={email.id}
               onClick={() => handleEmailClick(email)}
@@ -59,7 +48,7 @@ const Mail = () => {
                 {index + 1}
               </td>
               <td className="py-2 px-4 border border-gray-200 text-start">
-                {email.sender}
+                {email.from}
               </td>
               <td className="py-2 px-4 border border-gray-200 text-start">
                 {email.subject}
