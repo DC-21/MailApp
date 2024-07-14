@@ -26,13 +26,15 @@ const Login = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${ENDPOINT}/signin`, {
+      const response = await axios.post(`${ENDPOINT}/auth/signin`, {
         email,
         password,
       });
 
+      console.log(response.status);
+
       if (response.status === 200) {
-        const { user } = response.data;
+        const user = response.data;
 
         setIsAuthenticated(true);
         setUserDetails({
