@@ -1,4 +1,28 @@
+import { useRecoilState } from "recoil";
+import { useNavigate } from "react-router-dom";
+import { isAuthenticatedAtom, userDetailsAtom } from "../../recoil/atoms";
+
 const Navbar = () => {
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] =
+    useRecoilState(isAuthenticatedAtom);
+  const [userDetails, setUserDetails] = useRecoilState(userDetailsAtom);
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserDetails({
+      id: 0,
+      username: "",
+      email: "",
+    });
+
+    // Clear local storage
+    localStorage.clear();
+
+    // Navigate to home page
+    navigate("/");
+  };
+
   return (
     <nav className="p-2 w-full flex justify-between px-4">
       <div className="mt-4 flex gap-4 items-center rounded-xl shadow-gray-300 border border-gray-200 bg-white shadow-lg p-3">
@@ -22,6 +46,17 @@ const Navbar = () => {
           />
         </svg>
       </div>
+      {isAuthenticated && (
+        <div className="flex items-center gap-4">
+          <span>Welcome, {userDetails.username}</span>
+          <button
+            onClick={handleLogout}
+            className="p-2 bg-red-500 text-white rounded-lg"
+          >
+            Logout
+          </button>
+        </div>
+      )}
     </nav>
   );
 };

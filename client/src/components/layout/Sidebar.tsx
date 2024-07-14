@@ -7,7 +7,7 @@ const Sidebar = () => {
         <p className="font-semibold text-lg text-slate-800">VoiceMailer</p>
         <div className="mt-4 flex flex-col">
           <Link
-            to="/"
+            to="/home"
             className="p-1 rounded-lg hover:bg-slate-800 hover:text-white flex items-center gap-1"
           >
             <svg
