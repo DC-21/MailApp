@@ -44,6 +44,8 @@ const imapConfig: ImapSimpleOptions = {
 app.post("/send-email", (req: Request, res: Response) => {
   const { to, subject, text } = req.body;
 
+  console.log(req.body);
+
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,

@@ -7,9 +7,9 @@ interface ModalProps {
   onClose: () => void;
 }
 
-const parseContent = (content: string) => {
+const parseContent = (text: string) => {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = content.split(urlRegex);
+  const parts = text.split(urlRegex);
   let linkCount = 0;
 
   return parts.map((part, index) => {

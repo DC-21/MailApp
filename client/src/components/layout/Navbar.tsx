@@ -16,10 +16,8 @@ const Navbar = () => {
       email: "",
     });
 
-    // Clear local storage
     localStorage.clear();
 
-    // Navigate to home page
     navigate("/");
   };
 
@@ -50,6 +48,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <span>Welcome, {userDetails.username}</span>
           <button
+            type="submit"
             onClick={handleLogout}
             className="p-2 bg-red-500 text-white rounded-lg"
           >

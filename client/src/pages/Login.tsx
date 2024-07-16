@@ -31,16 +31,14 @@ const Login = () => {
         password,
       });
 
-      console.log(response.status);
-
       if (response.status === 200) {
-        const user = response.data;
+        const { id, username, email } = response.data;
 
         setIsAuthenticated(true);
         setUserDetails({
-          id: user.id,
-          username: user.username,
-          email: user.email,
+          id,
+          username,
+          email,
         });
 
         toast.success("Login successful!");
