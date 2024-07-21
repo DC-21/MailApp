@@ -8,6 +8,7 @@ const Mail = () => {
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
 
   const handleEmailClick = (email: Email) => {
+    console.log("Email clicked:", email);
     setSelectedEmail(email);
   };
 
@@ -23,6 +24,70 @@ const Mail = () => {
     return <div>Error: {error.message}</div>;
   }
 
+  const stripHtml = (html: string) => {
+    let doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
+  const parseContent = (text: string) => {
+    // Remove CSS blocks
+    const cssBlockRegex = /<style[\s\S]*?<\/style>/gi;
+    text = text.replace(cssBlockRegex, "");
+
+    // Remove inline CSS styles
+    const inlineCssRegex = /style="[^"]*"/gi;
+    text = text.replace(inlineCssRegex, "");
+
+    // Remove HTML comments
+    const htmlCommentsRegex = /<!--[\s\S]*?-->/gi;
+    text = text.replace(htmlCommentsRegex, "");
+
+    // Remove common email headers and footers
+    const headerFooterRegex =
+      /(--+|_+|-----|On.*wrote:|From:.*Sent:.*To:.*Subject:|Sent from my.*|^[>\|].*|Content-Type:.*; charset=.*|Content-Transfer-Encoding:.*|^MIME-Version:.*|Content-ID:.*)/gi;
+    text = text.replace(headerFooterRegex, "");
+
+    // Remove random alphanumeric strings (like "000000000000096b71061dba79bc")
+    const randomStringRegex = /\b[A-Fa-f0-9]{24,}\b/g;
+    text = text.replace(randomStringRegex, "");
+
+    // Remove HTML tags
+    text = stripHtml(text);
+
+    // Remove duplicate lines
+    const lines = text.split("\n");
+    const uniqueLines = Array.from(
+      new Set(lines.map((line) => line.trim()))
+    ).filter((line) => line);
+
+    // Combine unique lines back into a single string
+    text = uniqueLines.join(" ");
+
+    // Split text by URLs and wrap them in anchor tags
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    let linkCount = 0;
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        linkCount++;
+        return (
+          <div key={index} className="mb-2">
+            <a
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block p-2 bg-blue-500 text-white rounded"
+            >
+              Visit Site {linkCount}
+            </a>
+          </div>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
     <div className="py-4">
       <table className="min-w-full bg-white border border-gray-200">
@@ -35,26 +100,35 @@ const Mail = () => {
             <th className="py-2 px-4 border border-gray-200 text-start">
               Subject
             </th>
+            <th className="py-2 px-4 border border-gray-200 text-start hidden">
+              Content
+            </th>
           </tr>
         </thead>
         <tbody>
-          {emails?.map((email: Email, index: any) => (
-            <tr
-              key={email.id}
-              onClick={() => handleEmailClick(email)}
-              style={{ cursor: "pointer" }}
-            >
-              <td className="py-2 px-4 border border-gray-200 text-start">
-                {index + 1}
-              </td>
-              <td className="py-2 px-4 border border-gray-200 text-start">
-                {email.from}
-              </td>
-              <td className="py-2 px-4 border border-gray-200 text-start">
-                {email.subject}
-              </td>
-            </tr>
-          ))}
+          {emails
+            ?.slice()
+            .reverse()
+            .map((email: Email, index: number) => (
+              <tr
+                key={email.id}
+                onClick={() => handleEmailClick(email)}
+                style={{ cursor: "pointer" }}
+              >
+                <td className="py-2 px-4 border border-gray-200 text-start">
+                  {emails.length - index}
+                </td>
+                <td className="py-2 px-4 border border-gray-200 text-start">
+                  {email.from}
+                </td>
+                <td className="py-2 px-4 border border-gray-200 text-start">
+                  {email.subject}
+                </td>
+                <td className="py-2 px-4 border border-gray-200 text-start">
+                  {parseContent(email.text)}
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
       {selectedEmail && (

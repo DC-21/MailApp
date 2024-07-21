@@ -1,18 +1,28 @@
-import { useQuery } from "react-query";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { ENDPOINT } from "../typs/constants";
-
-// Function to fetch emails and clean up their content
-const fetchEmails = async () => {
-  const { data } = await axios.get(`${ENDPOINT}/fetch-emails`);
-  // Process each email to remove unwanted styles
-  const cleanedEmails = data.map((email: any) => ({
-    ...email,
-    content: email.content.replace(/<[^>]*>/g, ""), // Example: Remove all HTML tags
-  }));
-  return cleanedEmails;
-};
+import { Email } from "../typs/interfaces";
 
 export const useFetchEmails = () => {
-  return useQuery("emails", fetchEmails);
+  const [emails, setEmails] = useState<Email[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchEmails = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`${ENDPOINT}/fetch-emails`);
+        setEmails(response.data);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err as Error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmails();
+  }, []);
+
+  return { data: emails, isLoading, error };
 };

@@ -1,13 +1,40 @@
 import React from "react";
-import { Email } from "../typs/interfaces";
 import { Link } from "react-router-dom";
+import { Email } from "../typs/interfaces";
 
 interface ModalProps {
   email: Email;
   onClose: () => void;
 }
 
+const stripHtml = (html: string) => {
+  let doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+};
+
 const parseContent = (text: string) => {
+  // Remove common email headers and footers and unwanted patterns
+  const headerFooterRegex =
+    /(--+|_+|-----|On.*wrote:|From:.*Sent:.*To:.*Subject:|Sent from my.*|^[>\|].*|Content-Type:.*; charset=.*|Content-Transfer-Encoding:.*|^MIME-Version:.*|Content-ID:.*)/gi;
+  text = text.replace(headerFooterRegex, "");
+
+  // Remove random alphanumeric strings (like "000000000000096b71061dba79bc")
+  const randomStringRegex = /\b[A-Fa-f0-9]{24,}\b/g;
+  text = text.replace(randomStringRegex, "");
+
+  // Remove HTML tags
+  text = stripHtml(text);
+
+  // Remove duplicate lines
+  const lines = text.split("\n");
+  const uniqueLines = Array.from(
+    new Set(lines.map((line) => line.trim()))
+  ).filter((line) => line);
+
+  // Combine unique lines back into a single string
+  text = uniqueLines.join(" ");
+
+  // Split text by URLs and wrap them in anchor tags
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const parts = text.split(urlRegex);
   let linkCount = 0;
@@ -34,7 +61,10 @@ const parseContent = (text: string) => {
 
 const Modal: React.FC<ModalProps> = ({ email, onClose }) => {
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50">
+    <div
+      id="email-content"
+      className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50"
+    >
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full h-3/4 overflow-y-auto">
         <div className="mb-2">
           <span className="font-bold">From:</span> {email.from}
