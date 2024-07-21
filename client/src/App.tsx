@@ -3,6 +3,7 @@ import Mail from "./pages/Mail";
 import PageLayout from "./components/layout/Layout";
 import Compose from "./pages/Compose";
 import Login from "./pages/Login";
+import Success from "./pages/Success";
 
 function App() {
   return (
@@ -22,6 +23,14 @@ function App() {
           element={
             <PageLayout>
               <Compose />
+            </PageLayout>
+          }
+        />
+        <Route
+          path="/success"
+          element={
+            <PageLayout>
+              <Success />
             </PageLayout>
           }
         />

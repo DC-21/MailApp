@@ -24,15 +24,15 @@ app.use("/auth", authRouter);
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: `codedr21@gmail.com`,
-    pass: `iptd osna ynpl yjdo`,
+    user: ``,
+    pass: ``,
   },
 });
 
 const imapConfig: ImapSimpleOptions = {
   imap: {
-    user: `codedr21@gmail.com`,
-    password: `iptd osna ynpl yjdo`,
+    user: ``,
+    password: ``,
     host: "imap.gmail.com",
     port: 993,
     tls: true,

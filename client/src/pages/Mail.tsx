@@ -30,40 +30,31 @@ const Mail = () => {
   };
 
   const parseContent = (text: string) => {
-    // Remove CSS blocks
     const cssBlockRegex = /<style[\s\S]*?<\/style>/gi;
     text = text.replace(cssBlockRegex, "");
 
-    // Remove inline CSS styles
     const inlineCssRegex = /style="[^"]*"/gi;
     text = text.replace(inlineCssRegex, "");
 
-    // Remove HTML comments
     const htmlCommentsRegex = /<!--[\s\S]*?-->/gi;
     text = text.replace(htmlCommentsRegex, "");
 
-    // Remove common email headers and footers
     const headerFooterRegex =
       /(--+|_+|-----|On.*wrote:|From:.*Sent:.*To:.*Subject:|Sent from my.*|^[>\|].*|Content-Type:.*; charset=.*|Content-Transfer-Encoding:.*|^MIME-Version:.*|Content-ID:.*)/gi;
     text = text.replace(headerFooterRegex, "");
 
-    // Remove random alphanumeric strings (like "000000000000096b71061dba79bc")
     const randomStringRegex = /\b[A-Fa-f0-9]{24,}\b/g;
     text = text.replace(randomStringRegex, "");
 
-    // Remove HTML tags
     text = stripHtml(text);
 
-    // Remove duplicate lines
     const lines = text.split("\n");
     const uniqueLines = Array.from(
       new Set(lines.map((line) => line.trim()))
     ).filter((line) => line);
 
-    // Combine unique lines back into a single string
     text = uniqueLines.join(" ");
 
-    // Split text by URLs and wrap them in anchor tags
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
     let linkCount = 0;
